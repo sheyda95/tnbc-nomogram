@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNBC Nomogram</title>
+<meta name="description" content="Номограмма для прогнозирования pCR и безрецидивной выживаемости при тройном негативном раке молочной железы после неоадъювантной химиотерапии / Nomogram predicting pCR and DFS in triple-negative breast cancer.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f4e79'/><path d='M7 22h18M9 22V12m5 10V8m5 14v-7m5 7v-4' stroke='white' stroke-width='2.4' stroke-linecap='round'/></svg>">
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#18212b; --muted:#5b6673; --line:#e2e6eb;
+  --accent:#1f4e79; --accent-soft:#e7eef6; --good:#2e7d4f; --mid:#c77c12; --bad:#b3261e;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#11161c; --card:#1a2129; --ink:#e7ecf1; --muted:#9aa6b2; --line:#2b3540; --accent:#7fb2e5; --accent-soft:#1f2c3a; --good:#5cc08a; --mid:#e8a64a; --bad:#ef7b72; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{background:var(--card);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+.brand{font-weight:700;letter-spacing:.2px}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{border:0;background:none;color:var(--muted);padding:6px 14px;font:inherit;font-size:14px;cursor:pointer}
+.lang button.on{background:var(--accent);color:#fff}
+nav.tabs{display:flex;gap:4px;overflow-x:auto}
+nav.tabs a{padding:10px 14px;color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap;font-size:15px}
+nav.tabs a.on{color:var(--accent);border-color:var(--accent);font-weight:600}
+h1{font-size:clamp(22px,3.2vw,30px);line-height:1.25;margin:28px 0 6px}
+.lead{color:var(--muted);margin:0 0 22px;max-width:760px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h2{font-size:18px;margin:0 0 14px}
+.field{margin-bottom:16px}
+.field label{display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin-bottom:6px}
+.field label span.v{font-variant-numeric:tabular-nums;color:var(--accent)}
+.hint{color:var(--muted);font-size:13px;margin-top:3px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 0;min-width:52px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 6px;font:inherit;font-size:14px;cursor:pointer}
+.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.result{display:flex;align-items:baseline;gap:10px;margin:2px 0 8px}
+.big{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.bar{height:10px;border-radius:99px;background:var(--accent-soft);overflow:hidden;margin:6px 0 14px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.dfs3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 12px}
+.dfs3 div{background:var(--accent-soft);border-radius:10px;padding:10px;text-align:center}
+.dfs3 b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.dfs3 small{color:var(--muted);font-size:12px}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:600;color:#fff}
+.note{font-size:13px;color:var(--muted)}
+svg text{fill:var(--muted);font-size:11px}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}
+figure{margin:0}
+figure img{width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#fff}
+figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13px}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.disc{border-left:4px solid var(--mid);background:var(--card);padding:12px 16px;border-radius:8px;margin:22px 0;font-size:14px;color:var(--muted)}
+footer{color:var(--muted);font-size:13px;padding:28px 0 40px}
+section[hidden]{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div class="brand"><span data-i18n="brand"></span><small data-i18n="brandSub"></small></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button data-lang="ru">RU</button><button data-lang="en">EN</button>
+    </div>
+  </div>
+  <div class="wrap"><nav class="tabs">
+    <a href="#calc" data-tab="calc" data-i18n="tabCalc"></a>
+    <a href="#nomo" data-tab="nomo" data-i18n="tabNomo"></a>
+    <a href="#perf" data-tab="perf" data-i18n="tabPerf"></a>
+    <a href="#about" data-tab="about" data-i18n="tabAbout"></a>
+  </nav></div>
+</header>
+
+<main class="wrap">
+<!-- CALCULATOR -->
+<section id="calc">
+  <h1 data-i18n="title"></h1>
+  <p class="lead" data-i18n="lead"></p>
+  <div class="grid">
+    <div class="card">
+      <h2 data-i18n="inputs"></h2>
+      <div class="field">
+        <label for="tils"><span data-i18n="tils"></span><span class="v" id="tilsV"></span></label>
+        <input type="range" id="tils" min="0" max="100" step="5" value="20">
+        <div class="hint" data-i18n="tilsHint"></div>
+      </div>
+      <div class="field">
+        <label for="ki67"><span data-i18n="ki67"></span><span class="v" id="ki67V"></span></label>
+        <input type="range" id="ki67" min="0" max="100" step="5" value="80">
+      </div>
+      <div class="field">
+        <label data-i18n="cT"></label>
+        <div class="seg" data-name="cT"><button data-v="1">cT1</button><button data-v="2" class="on">cT2</button><button data-v="3">cT3</button><button data-v="4">cT4</button></div>
+      </div>
+      <div class="field">
+        <label data-i18n="cN"></label>
+        <div class="seg" data-name="cN"><button data-v="0" class="on">cN0</button><button data-v="1">cN1</button><button data-v="2">cN2</button><button data-v="3">cN3</button></div>
+      </div>
+      <div class="field">
+        <label data-i18n="brca"></label>
+        <div class="seg" data-name="brca"><button data-v="0" class="on" data-i18n="no"></button><button data-v="1" data-i18n="yes"></button></div>
+      </div>
+      <div class="field">
+        <label data-i18n="plat"></label>
+        <div class="seg" data-name="plat"><button data-v="0" data-i18n="no"></button><button data-v="1" class="on" data-i18n="yes"></button></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:20px">
+        <h2 data-i18n="pcrTitle"></h2>
+        <div class="result"><span class="big" id="pcrOut">–</span></div>
+        <div class="bar"><i id="pcrBar" style="width:0"></i></div>
+        <p class="note" data-i18n="pcrNote"></p>
+      </div>
+      <div class="card">
+        <h2 data-i18n="dfsTitle"></h2>
+        <div class="dfs3">
+          <div><b id="d12">–</b><small data-i18n="m12"></small></div>
+          <div><b id="d24">–</b><small data-i18n="m24"></small></div>
+          <div><b id="d36">–</b><small data-i18n="m36"></small></div>
+        </div>
+        <p style="margin:0 0 10px"><span data-i18n="riskGroup"></span>: <span class="pill" id="grp">–</span></p>
+        <svg id="curve" viewBox="0 0 420 200" width="100%" role="img" aria-label="DFS curve"></svg>
+        <p class="note" data-i18n="dfsNote"></p>
+      </div>
+    </div>
+  </div>
+  <div class="disc" data-i18n="disclaimer"></div>
+</section>
+
+<!-- NOMOGRAMS -->
+<section id="nomo" hidden>
+  <h1 data-i18n="tabNomo"></h1>
+  <p class="lead" data-i18n="nomoLead"></p>
+  <div class="card" style="margin-bottom:20px"><figure><img data-src="img/7_Nomogram_pCR_{L}.png" alt="pCR nomogram"><figcaption data-i18n="capNomoP"></figcaption></figure></div>
+  <div class="card"><figure><img data-src="img/8_Nomogram_DFS_{L}.png" alt="DFS nomogram"><figcaption data-i18n="capNomoS"></figcaption></figure></div>
+</section>
+
+<!-- PERFORMANCE -->
+<section id="perf" hidden>
+  <h1 data-i18n="tabPerf"></h1>
+  <p class="lead" data-i18n="perfLead"></p>
+  <div class="card" style="margin-bottom:20px">
+    <table>
+      <thead><tr><th data-i18n="metric"></th><th>pCR</th><th data-i18n="dfsShort"></th></tr></thead>
+      <tbody>
+        <tr><td data-i18n="disc"></td><td class="n">AUC 0.696 (0.637–0.755)</td><td class="n">C 0.707 (0.637–0.775)</td></tr>
+        <tr><td data-i18n="opt"></td><td class="n">0.670</td><td class="n">0.699</td></tr>
+        <tr><td data-i18n="tdauc"></td><td class="n">—</td><td class="n">0.673 / 0.724 / 0.730</td></tr>
+        <tr><td data-i18n="slope"></td><td class="n">0.86 → <span data-i18n="shrunk"></span></td><td class="n">0.96</td></tr>
+        <tr><td>Hosmer–Lemeshow</td><td class="n">p = 0.26</td><td class="n">—</td></tr>
+        <tr><td>Brier</td><td class="n">0.220</td><td class="n">0.150 (36 <span data-i18n="mo"></span>)</td></tr>
+        <tr><td data-i18n="vsSingle"></td><td class="n">Ki-67 0.609; TILs 0.586; cT 0.604<br><span class="note">DeLong p ≤ 0.008</span></td><td class="n">TILs 0.593; cT 0.632; cN 0.637</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="figs">
+    <figure><img data-src="img/1_ROC_pCR_{L}.png" alt="ROC"><figcaption data-i18n="capROC"></figcaption></figure>
+    <figure><img data-src="img/2_tdROC_DFS_{L}.png" alt="tdROC"><figcaption data-i18n="capTD"></figcaption></figure>
+    <figure><img data-src="img/3_Calibration_pCR_{L}.png" alt="Calibration pCR"><figcaption data-i18n="capCalP"></figcaption></figure>
+    <figure><img data-src="img/4_Calibration_DFS36_{L}.png" alt="Calibration DFS"><figcaption data-i18n="capCalS"></figcaption></figure>
+    <figure><img data-src="img/6b_KM_risk3_{L}.png" alt="KM"><figcaption data-i18n="capKM"></figcaption></figure>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" hidden>
+  <h1 data-i18n="tabAbout"></h1>
+  <div class="card"><div id="aboutBody"></div></div>
+</section>
+</main>
+
+<footer class="wrap"><span data-i18n="footer"></span> · v1.0</footer>
+
+<script>
+/* Model coefficients (R, rms 1000 bootstrap; pCR coefficients uniformly shrunk by 0.864) */
+const M = {
+  pcr: { b0: -0.572243805617323, tils: 0.0084079366392611, ki67: 0.0164388168370902, cT: -0.455421752218801, cNpos: -0.373253725948756, brca: 0.303045511384136, plat: 0.349279937586361 },
+  dfs: { tils: -0.0172916129762576, cT34: 0.952259303044706, cN: 0.410757061249574,
+    S0: [1,1,1,1,1,1,1,0.997706,0.990628,0.983131,0.967783,0.96513,0.948092,0.936304,0.933301,0.93022,0.920775,0.904326,0.900978,0.894115,0.876346,0.87271,0.865365,0.861574,0.857699,0.857699,0.853683,0.853683,0.845321,0.845321,0.836769,0.836769,0.8273,0.8273,0.81754,0.81754,0.81754,0.81754,0.81754,0.81754,0.81754,0.811464,0.811464,0.811464,0.811464,0.811464,0.811464,0.802851,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136,0.794136],
+    cuts: [-0.259374194643864, 0.237840931486998] }
+};
+
+const T = {
+ru: {
+  brand:"Номограмма ТНРМЖ", brandSub:"pCR и безрецидивная выживаемость после НАХТ",
+  tabCalc:"Калькулятор", tabNomo:"Номограммы", tabPerf:"Качество модели", tabAbout:"О модели",
+  title:"Прогноз pCR и безрецидивной выживаемости при тройном негативном раке молочной железы",
+  lead:"Введите исходные клинико-морфологические параметры до начала неоадъювантной химиотерапии. Расчёт выполняется в браузере, данные никуда не отправляются.",
+  inputs:"Параметры пациентки", tils:"TILs в строме, %", tilsHint:"Оценка по рекомендациям International TILs Working Group", ki67:"Ki-67, %",
+  cT:"Клиническая категория cT", cN:"Клиническая категория cN", brca:"Герминальная мутация BRCA1/2", plat:"Платина в схеме НАХТ", yes:"Да", no:"Нет",
+  pcrTitle:"Вероятность pCR", pcrNote:"pCR — ypT0/is ypN0. Модель: TILs, Ki-67, cT, cN (N0 / N+), BRCA1/2, платина.",
+  dfsTitle:"Безрецидивная выживаемость", m12:"12 мес", m24:"24 мес", m36:"36 мес", riskGroup:"Группа риска",
+  low:"низкий", mid:"промежуточный", high:"высокий",
+  dfsNote:"Модель БСВ: TILs, cT3–4 vs cT1–2, cN (0–3). Наблюдаемая 36-мес. БСВ в группах: 90,0% / 83,3% / 54,5%.",
+  disclaimer:"Инструмент предназначен для исследовательских целей и не заменяет клиническое решение. Модель прошла только внутреннюю валидацию (бутстрэп) на одноцентровой ретроспективной когорте (n = 303); внешняя валидация не проводилась.",
+  nomoLead:"Для каждого параметра найдите баллы на верхней шкале, сложите их и по сумме баллов определите вероятность на нижних шкалах.",
+  capNomoP:"Номограмма для прогнозирования pCR (коэффициенты скорректированы на оптимизм, коэффициент сжатия 0,864).",
+  capNomoS:"Номограмма для прогнозирования БСВ к 12, 24 и 36 месяцам.",
+  perfLead:"Дискриминация, калибровка и внутренняя валидация (бутстрэп, 1000 повторов, метод Harrell).",
+  metric:"Показатель", dfsShort:"БСВ", disc:"Дискриминация (95% ДИ)", opt:"С поправкой на оптимизм", tdauc:"Time-dependent AUC 12 / 24 / 36 мес",
+  slope:"Наклон калибровки (скорр.)", shrunk:"применено сжатие", mo:"мес", vsSingle:"Одиночные предикторы",
+  capROC:"ROC-кривые: номограмма и одиночные предикторы (тест DeLong).", capTD:"Зависящие от времени ROC-кривые модели БСВ.",
+  capCalP:"Калибровка модели pCR.", capCalS:"Калибровка модели БСВ к 36 месяцам.", capKM:"БСВ в группах риска (терцили суммы баллов).",
+  about:`<p><b>Когорта.</b> 303 пациентки с тройным негативным раком молочной железы, получившие неоадъювантную химиотерапию с последующей операцией. pCR достигнут у 147 (48,5%). За медиану наблюдения 40 мес. (IQR 23–56; обратный метод Каплана–Мейера) зарегистрировано 59 событий.</p>
+  <p><b>Модель pCR.</b> Многофакторная логистическая регрессия: TILs (непрерывно), Ki-67 (непрерывно), cT (1–4), cN0 vs cN+, мутация BRCA1/2, платина в схеме. EPV ≈ 24,5. Линейность непрерывных предикторов подтверждена сплайнами (p нелин. > 0,4), VIF ≤ 1,11.</p>
+  <p><b>Модель БСВ.</b> Регрессия Кокса: TILs, cT3–4 vs cT1–2, cN (0–3). EPV ≈ 19,7. Допущение о пропорциональности рисков выполняется (тест Шёнфельда, глобальный p = 0,51).</p>
+  <p><b>Валидация.</b> Внутренняя, бутстрэп (B = 1000) с коррекцией на оптимизм. Внешняя валидация не проводилась.</p>
+  <p><b>Ограничения.</b> Одноцентровой ретроспективный дизайн; умеренная дискриминация (AUC ≈ 0,7); отсутствие внешней валидации.</p>`,
+  footer:"Для исследовательских целей"
+},
+en: {
+  brand:"TNBC Nomogram", brandSub:"pCR and disease-free survival after NACT",
+  tabCalc:"Calculator", tabNomo:"Nomograms", tabPerf:"Model performance", tabAbout:"About",
+  title:"Predicting pCR and disease-free survival in triple-negative breast cancer",
+  lead:"Enter baseline clinicopathological characteristics before neoadjuvant chemotherapy. Calculations run in your browser; no data are sent anywhere.",
+  inputs:"Patient characteristics", tils:"Stromal TILs, %", tilsHint:"Assessed per International TILs Working Group guidelines", ki67:"Ki-67, %",
+  cT:"Clinical T category", cN:"Clinical N category", brca:"Germline BRCA1/2 mutation", plat:"Platinum-based NACT", yes:"Yes", no:"No",
+  pcrTitle:"Probability of pCR", pcrNote:"pCR — ypT0/is ypN0. Model: TILs, Ki-67, cT, cN (N0 / N+), BRCA1/2, platinum.",
+  dfsTitle:"Disease-free survival", m12:"12 months", m24:"24 months", m36:"36 months", riskGroup:"Risk group",
+  low:"low", mid:"intermediate", high:"high",
+  dfsNote:"DFS model: TILs, cT3–4 vs cT1–2, cN (0–3). Observed 36-month DFS by group: 90.0% / 83.3% / 54.5%.",
+  disclaimer:"This tool is intended for research purposes and does not replace clinical judgement. The model was internally validated only (bootstrap) in a single-centre retrospective cohort (n = 303); no external validation has been performed.",
+  nomoLead:"Find the points for each characteristic on the top scale, sum them, and read the predicted probability from the bottom scales.",
+  capNomoP:"Nomogram predicting pCR (optimism-corrected coefficients, shrinkage factor 0.864).",
+  capNomoS:"Nomogram predicting 12-, 24- and 36-month DFS.",
+  perfLead:"Discrimination, calibration and internal validation (bootstrap, 1000 resamples, Harrell's method).",
+  metric:"Metric", dfsShort:"DFS", disc:"Discrimination (95% CI)", opt:"Optimism-corrected", tdauc:"Time-dependent AUC 12 / 24 / 36 mo",
+  slope:"Calibration slope (corrected)", shrunk:"shrinkage applied", mo:"mo", vsSingle:"Single predictors",
+  capROC:"ROC curves: nomogram vs single predictors (DeLong test).", capTD:"Time-dependent ROC curves of the DFS model.",
+  capCalP:"Calibration of the pCR model.", capCalS:"Calibration of the DFS model at 36 months.", capKM:"DFS by risk group (tertiles of total points).",
+  about:`<p><b>Cohort.</b> 303 patients with triple-negative breast cancer treated with neoadjuvant chemotherapy followed by surgery. pCR was achieved in 147 (48.5%). At a median follow-up of 40 months (IQR 23–56; reverse Kaplan–Meier), 59 events were recorded.</p>
+  <p><b>pCR model.</b> Multivariable logistic regression: TILs (continuous), Ki-67 (continuous), cT (1–4), cN0 vs cN+, BRCA1/2 mutation, platinum. EPV ≈ 24.5. Linearity of continuous predictors confirmed with splines (p for non-linearity > 0.4); VIF ≤ 1.11.</p>
+  <p><b>DFS model.</b> Cox regression: TILs, cT3–4 vs cT1–2, cN (0–3). EPV ≈ 19.7. Proportional hazards assumption held (Schoenfeld global p = 0.51).</p>
+  <p><b>Validation.</b> Internal bootstrap (B = 1000) with optimism correction. No external validation.</p>
+  <p><b>Limitations.</b> Single-centre retrospective design; moderate discrimination (AUC ≈ 0.7); no external validation.</p>`,
+  footer:"For research use only"
+}};
+
+let lang = (new URLSearchParams(location.search).get("lang")) || (()=>{ try { return localStorage.getItem("lang"); } catch(e){ return null; } })() || ((navigator.language||"ru").startsWith("ru") ? "ru" : "en");
+if(!T[lang]) lang = "ru";
+const st = { tils:20, ki67:80, cT:2, cN:0, brca:0, plat:1 };
+const $ = id => document.getElementById(id);
+const pct = (x,k=0) => (100*x).toFixed(k).replace(".", lang==="ru" ? "," : ".") + "%";
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { const k = el.dataset.i18n; if(T[lang][k] !== undefined) el.textContent = T[lang][k]; });
+  $("aboutBody").innerHTML = T[lang].about;
+  document.querySelectorAll("img[data-src]").forEach(im => im.src = im.dataset.src.replace("{L}", lang.toUpperCase()));
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  try { localStorage.setItem("lang", lang); } catch(e){}
+  calc();
+}
+
+function calc(){
+  const p = M.pcr, s = M.dfs;
+  const lpP = p.b0 + p.tils*st.tils + p.ki67*st.ki67 + p.cT*st.cT + p.cNpos*(st.cN>0?1:0) + p.brca*st.brca + p.plat*st.plat;
+  const prob = 1/(1+Math.exp(-lpP));
+  $("pcrOut").textContent = pct(prob); $("pcrBar").style.width = (100*prob).toFixed(1)+"%";
+  const xb = s.tils*st.tils + s.cT34*(st.cT>=3?1:0) + s.cN*st.cN, hr = Math.exp(xb);
+  const S = t => Math.pow(s.S0[t], hr);
+  $("d12").textContent = pct(S(12)); $("d24").textContent = pct(S(24)); $("d36").textContent = pct(S(36));
+  const g = xb <= s.cuts[0] ? ["low","var(--good)"] : xb <= s.cuts[1] ? ["mid","var(--mid)"] : ["high","var(--bad)"];
+  const el = $("grp"); el.textContent = T[lang][g[0]]; el.style.background = g[1];
+  drawCurve(S, g[1]);
+  $("tilsV").textContent = st.tils + "%"; $("ki67V").textContent = st.ki67 + "%";
+}
+
+function drawCurve(S, col){
+  const W=420,H=200,l=38,r=10,t=10,b=28, x=v=>l+(W-l-r)*v/60, y=v=>t+(H-t-b)*(1-v);
+  let g = "";
+  [0,.25,.5,.75,1].forEach(v=>{ g += `<line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${l-6}" y="${y(v)+4}" text-anchor="end">${v*100}%</text>`; });
+  [0,12,24,36,48,60].forEach(m=>{ g += `<text x="${x(m)}" y="${H-8}" text-anchor="middle">${m}</text>`; });
+  let d = `M${x(0)},${y(1)}`;
+  for(let m=1;m<=60;m++){ d += `H${x(m)}V${y(S(m))}`; }
+  g += `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.5"/>`;
+  [12,24,36].forEach(m=>{ g += `<circle cx="${x(m)}" cy="${y(S(m))}" r="3.5" fill="${col}"/>`; });
+  g += `<text x="${W-r}" y="${H-8}" text-anchor="end">${lang==="ru"?"мес":"mo"}</text>`;
+  $("curve").innerHTML = g;
+}
+
+["tils","ki67"].forEach(id => $(id).addEventListener("input", e => { st[id] = +e.target.value; calc(); }));
+document.querySelectorAll(".seg").forEach(seg => seg.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  seg.querySelectorAll("button").forEach(x => x.classList.remove("on")); b.classList.add("on");
+  st[seg.dataset.name] = +b.dataset.v; calc();
+}));
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => { lang = b.dataset.lang; applyLang(); }));
+
+function route(){
+  const tab = (location.hash || "#calc").slice(1);
+  document.querySelectorAll("main > section").forEach(s => s.hidden = s.id !== tab);
+  document.querySelectorAll("nav.tabs a").forEach(a => a.classList.toggle("on", a.dataset.tab === tab));
+}
+window.addEventListener("hashchange", route);
+route(); applyLang();
+</script>
+</body>
+</html>
