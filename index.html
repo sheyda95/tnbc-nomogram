@@ -126,6 +126,7 @@ dl.spec dd{margin:0;font-variant-numeric:tabular-nums;font-weight:500;text-align
 footer{margin-top:40px;color:var(--muted);font-size:12px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
 </style>
+<script data-goatcounter="https://tnbc-nomogram.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -333,7 +334,7 @@ const T={
   spec:[["Когорта","303 пациентки"],["Полный ответ","147 (48,5%)"],["События БСВ","59"],["Медиана наблюдения","40 мес (IQR 23–56)"],
         ["AUC для pCR (скорр.)","0,670"],["C-индекс для БСВ (скорр.)","0,699"]],
   use:"Передвиньте ползунки и выберите категории слева — прогноз пересчитывается сразу. Пунктир на графике — наблюдаемая выживаемость всей когорты, сплошная линия — прогноз для введённых параметров.",
-  methods:"pCR: логистическая регрессия (TILs, Ki-67, cT, cN0 / cN+, BRCA1/2, платина). БСВ: регрессия Кокса (TILs, cT3–4 / cT1–2, cN 0–3). Расчёт выполняется в браузере, данные никуда не передаются.",
+  methods:"pCR: логистическая регрессия (TILs, Ki-67, cT, cN0 / cN+, BRCA1/2, платина). БСВ: регрессия Кокса (TILs, cT3–4 / cT1–2, cN 0–3). Расчёт выполняется в браузере, введённые параметры никуда не передаются. Сайт ведёт анонимную статистику посещений (GoatCounter, без cookies).",
   warn:"Инструмент разработан для научных целей. Модель прошла только внутреннюю бутстрэп-валидацию на одноцентровой ретроспективной когорте; внешняя валидация не проводилась. Не предназначена для принятия клинических решений.",
   footer:"Для исследовательских целей · v1.1"
  },
@@ -364,7 +365,7 @@ const T={
   spec:[["Cohort","303 patients"],["Complete response","147 (48.5%)"],["DFS events","59"],["Median follow-up","40 mo (IQR 23–56)"],
         ["AUC for pCR (corrected)","0.670"],["C-index for DFS (corrected)","0.699"]],
   use:"Move the sliders and pick the categories on the left — the prediction updates immediately. The dashed line is observed survival of the whole cohort; the solid line is the prediction for the entered parameters.",
-  methods:"pCR: logistic regression (TILs, Ki-67, cT, cN0 / cN+, BRCA1/2, platinum). DFS: Cox regression (TILs, cT3–4 / cT1–2, cN 0–3). Calculations run in your browser; no data are sent anywhere.",
+  methods:"pCR: logistic regression (TILs, Ki-67, cT, cN0 / cN+, BRCA1/2, platinum). DFS: Cox regression (TILs, cT3–4 / cT1–2, cN 0–3). Calculations run in your browser; entered parameters are never sent anywhere. The site collects anonymous visit statistics (GoatCounter, no cookies).",
   warn:"This tool is intended for research purposes. The model underwent internal bootstrap validation only in a single-centre retrospective cohort; no external validation has been performed. It must not be used to guide clinical decisions.",
   footer:"For research use only · v1.1"
  }
@@ -465,12 +466,16 @@ function applyLang(){
   drawStatic(); update();
 }
 
-["tils","ki67"].forEach(id=>$(id).addEventListener("input",e=>{st[id]=+e.target.value;update();}));
+/* анонимная статистика: только факт расчёта (1 раз за посещение) и смена языка, без значений */
+let counted=false;
+const track=name=>{try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:name,event:true});}catch(e){}};
+const used=()=>{if(!counted){counted=true;track("calculation");}};
+["tils","ki67"].forEach(id=>$(id).addEventListener("input",e=>{st[id]=+e.target.value;update();used();}));
 document.querySelectorAll(".seg").forEach(seg=>seg.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{
   seg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed","false"));
-  btn.setAttribute("aria-pressed","true"); st[seg.dataset.k]=+btn.dataset.v; update();
+  btn.setAttribute("aria-pressed","true"); st[seg.dataset.k]=+btn.dataset.v; update(); used();
 })));
-document.querySelectorAll(".lang button").forEach(b=>b.addEventListener("click",()=>{lang=b.dataset.lang;applyLang();}));
+document.querySelectorAll(".lang button").forEach(b=>b.addEventListener("click",()=>{lang=b.dataset.lang;applyLang();track("lang-"+lang);}));
 applyLang();
 </script>
 </body>
